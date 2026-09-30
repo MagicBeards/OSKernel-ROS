@@ -99,8 +99,4 @@ __restore_trap: # a0: *TrapContext, a1: 用户空间令牌
     # 返回用户栈
     ld sp, 2*8(sp)
 
-    # 调试测试：从 0x10000 加载 64 位
-    lui t0, 0x10
-    ld t1, 0(t0)
-
     sret
