@@ -15,6 +15,7 @@ USER_BINARY_NAMES := $(shell cargo metadata --no-deps --format-version 1 | jq -r
 ')
 
 TARGET_DIR := target/riscv64gc-unknown-none-elf
+HOST_TARGET ?= $(shell rustc -vV | sed -n 's/^host: //p')
 KERNEL_ELF := $(TARGET_DIR)/debug/$(KERNEL_BINARY_NAME)
 KERNEL_BIN := $(TARGET_DIR)/debug/$(KERNEL_BINARY_NAME).bin
 KERNEL_ELF_RELEASE := $(TARGET_DIR)/release/$(KERNEL_BINARY_NAME)
@@ -78,11 +79,11 @@ build-active-user.release:
 
 # 打包用户程序文件系统 (开发模式)
 pack-users-fs-img.dev: build-users.dev
-	cargo run -p ros-fs-fuse -- --app $(USER_BINARY_NAMES) --target $(TARGET_DIR)/debug --output $(FS_IMG)
+	cargo run -p ros-fs-fuse --target $(HOST_TARGET) -- --app $(USER_BINARY_NAMES) --target $(TARGET_DIR)/debug --output $(FS_IMG)
 
 # 打包用户程序文件系统 (发布模式)
 pack-users-fs-img.release: build-users.release
-	cargo run -p ros-fs-fuse -- --app $(USER_BINARY_NAMES) --target $(TARGET_DIR)/release --output $(FS_IMG_RELEASE)
+	cargo run -p ros-fs-fuse --target $(HOST_TARGET) -- --app $(USER_BINARY_NAMES) --target $(TARGET_DIR)/release --output $(FS_IMG_RELEASE)
 
 #endregion 构建
 
