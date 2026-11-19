@@ -1,0 +1,5 @@
+# Pinned so a fresh clone builds the same way it was verified.
+# `nightly` is required: user-build/ uses the unstable `per-package-target` feature.
+[toolchain]
+channel = "nightly-2026-11-18"
+targets = ["riscv64gc-unknown-none-elf"]

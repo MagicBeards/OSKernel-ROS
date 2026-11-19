@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The toolchain and target come from rust-toolchain.toml, so CI builds
+      # with exactly the nightly the repository is pinned to.
+      - name: Install pinned toolchain
+        run: rustup show
+
+      - name: Build kernel for RISC-V
+        run: cargo build --target riscv64gc-unknown-none-elf
+
+      - name: Build the filesystem crate for the host
+        run: cargo build -p ros-fs

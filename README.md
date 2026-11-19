@@ -2,6 +2,10 @@
 
 从零开始使用 Rust 编写的运行在 RISC-V 架构上的简单类 Unix 操作系统内核实现。
 
+> **English readers:** see [README.en.md](README.en.md) for a project overview, build
+> instructions, and how to mount the filesystem image on Linux.
+> 英文读者请看 [README.en.md](README.en.md)：项目概览、构建方式，以及在 Linux 上挂载文件系统镜像的方法。
+
 ## 比赛信息
 
 项目为 [2024年全国大学生计算机系统能力大赛-操作系统设计赛(华东区域赛)-OS原理赛道](https://os.educg.net/?token=mFdHhJEk3gYJUVY04cNJCPrCl4h4Nxeu4EEkp6Vszn#/index?TYPE=OS_HDN/#/index?TYPE=OS_HDN)

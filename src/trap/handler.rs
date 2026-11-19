@@ -33,7 +33,7 @@ pub fn trap_handler() -> ! {
     let stval = stval::read();
     match scause {
         // 用户态环境调用异常
-        scause::Trap::Exception(const { Exception::UserEnvCall as usize }) => {
+        scause::Trap::Exception(code) if code == Exception::UserEnvCall as usize => {
             let ctx = Processor::current_trap_cx().unwrap();
             ctx.sepc += 4; // 跳过 ecall 指令
             let ret = syscall(Syscall::from(*ctx.a(7)), [*ctx.a(0), *ctx.a(1), *ctx.a(2)]);
@@ -42,16 +42,18 @@ pub fn trap_handler() -> ! {
             *ctx.a(0) = ret as usize; // 将系统调用返回值存入 a0 寄存器
         }
         // 存储错误或存储页错误异常
-        scause::Trap::Exception(const { Exception::StoreFault as usize })
-        | scause::Trap::Exception(const { Exception::StorePageFault as usize }) => {
+        scause::Trap::Exception(code)
+            if code == Exception::StoreFault as usize
+                || code == Exception::StorePageFault as usize =>
+        {
             todo!("终止进程");
         }
         // 非法指令异常
-        scause::Trap::Exception(const { Exception::IllegalInstruction as usize }) => {
+        scause::Trap::Exception(code) if code == Exception::IllegalInstruction as usize => {
             todo!("终止进程");
         }
         // 监督者定时器中断
-        scause::Trap::Interrupt(const { Interrupt::SupervisorTimer as usize }) => {
+        scause::Trap::Interrupt(code) if code == Interrupt::SupervisorTimer as usize => {
             // todo!("Timer interrupt");
             // 设置下一个定时器中断
             set_next_timeout(TIMER_INTERVAL_USEC);
