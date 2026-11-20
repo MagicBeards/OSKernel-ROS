@@ -6,3 +6,6 @@ edition = "2024"
 [dependencies]
 spin = "0.9.8"
 lazy_static = { version = "1.5.0", features = ["spin_no_std"] }
+[dev-dependencies]
+# The test crate needs the same mutex type ros-fs uses internally (no_std: spin).
+spin = "0.9.8"

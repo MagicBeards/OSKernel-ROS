@@ -21,3 +21,16 @@ jobs:
 
       - name: Build the filesystem crate for the host
         run: cargo build -p ros-fs
+
+  test-filesystem:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pinned toolchain
+        run: rustup show
+
+      # .cargo/config.toml defaults to the RISC-V target, which has no test
+      # harness, so the host triple has to be named explicitly.
+      - name: Run ros-fs tests
+        run: cargo test -p ros-fs --target x86_64-unknown-linux-gnu
