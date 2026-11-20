@@ -1,29 +1,31 @@
-name: Deploy Cargo Docs
+name: Docs
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build-docs:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-    - name: Set up Rust
-      uses: dtolnay/rust-toolchain@master
-      with:
-        toolchain: nightly
-        targets: riscv64gc-unknown-none-elf
+      # Toolchain and target come from rust-toolchain.toml.
+      - name: Install pinned toolchain
+        run: rustup show
 
-    - name: Build documentation
-      run: cargo doc --all --document-private-items
+      - name: Build API documentation
+        run: cargo doc --no-deps --document-private-items
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        personal_token: ${{ secrets.PERSONAL_TOKEN }}
-        publish_dir: ./target/riscv64gc-unknown-none-elf/doc
+      # Published as a build artifact rather than pushed to a separate Pages
+      # repository. The previous workflow deployed to gerrnperl.github.io/ROS666
+      # through a personal access token that was never configured here, so it
+      # failed on every run since 2026-05. The generated site is still served at
+      # that address; this job only verifies the docs keep building.
+      - name: Upload API documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-docs
+          path: target/riscv64gc-unknown-none-elf/doc
+          if-no-files-found: error
