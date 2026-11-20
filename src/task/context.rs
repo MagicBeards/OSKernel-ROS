@@ -45,7 +45,7 @@ impl TaskCtx {
     /// ```
     pub fn goto_trap_return(kernel_stack_ptr: usize) -> Self {
         Self {
-            ra: trap_return as usize,
+            ra: trap_return as *const () as usize,
             sp: kernel_stack_ptr,
             s: [0; 12],
         }

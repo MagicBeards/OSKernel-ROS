@@ -1,6 +1,6 @@
 //! 陷入处理
 
-use core::{arch::asm, usize};
+use core::arch::asm;
 
 use common::syscall::Syscall;
 use riscv::{

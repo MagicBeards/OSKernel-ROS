@@ -165,7 +165,7 @@ impl ProcessControlBlock {
             user_sp,
             KERNEL_SPACE.ref_cell.borrow_mut().token(),
             kernel_stack_top,
-            trap_handler as usize,
+            trap_handler as *const () as usize,
         );
         pcb
     }
@@ -258,7 +258,7 @@ impl SyncRefCell<ProcessControlBlock> {
             user_sp,
             KERNEL_SPACE.ref_cell.borrow_mut().token(),
             pcb.kernel_stack.top(),
-            trap_handler as usize,
+            trap_handler as *const () as usize,
         );
 
         // as the return value of syscall is stored in a0

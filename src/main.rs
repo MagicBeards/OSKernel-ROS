@@ -83,7 +83,7 @@ fn clear_bss() {
         fn __bss_end();
     }
 
-    for i in __bss_start as usize..__bss_end as usize {
+    for i in __bss_start as *const () as usize..__bss_end as *const () as usize {
         unsafe {
             core::ptr::write_volatile(i as *mut u8, 0);
         }

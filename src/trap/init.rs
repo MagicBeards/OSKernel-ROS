@@ -25,6 +25,6 @@ pub fn enable_timer_interrupt() {
 fn set_kernel_trap_entry() {
     unsafe {
         // 写入陷入处理函数地址
-        stvec::write(trap_from_kernel as usize, TrapMode::Direct);
+        stvec::write(trap_from_kernel as *const () as usize, TrapMode::Direct);
     }
 }
