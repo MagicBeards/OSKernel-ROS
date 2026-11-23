@@ -21,14 +21,13 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use block_file::BlockFile;
+use ros_fs_fuse::block_file::BlockFile;
 use clap::Parser;
 use ros_fs::{
     fs::{FileSystem, FileSystemRootInode},
     layout::disk_inode::InodeType,
 };
 
-mod block_file;
 
 /// 应用程序打包工具
 ///

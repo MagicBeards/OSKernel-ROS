@@ -34,3 +34,35 @@ jobs:
       # harness, so the host triple has to be named explicitly.
       - name: Run ros-fs tests
         run: cargo test -p ros-fs --target x86_64-unknown-linux-gnu
+
+  test-image-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pinned toolchain
+        run: rustup show
+
+      # ros-fs-fuse declares forced-target = x86_64-unknown-linux-gnu, so these
+      # binaries only exist for Linux and land under that target directory.
+      - name: Build the image tools
+        run: cargo build -p ros-fs-fuse --bins
+
+      - name: Pack an image and read it back
+        run: |
+          set -eu
+          BIN=target/x86_64-unknown-linux-gnu/debug
+          mkdir -p /tmp/apps
+          printf 'hello from ros-fs\n' > /tmp/apps/hello
+
+          echo "--- pack ---"
+          "$BIN/ros-fs-fuse" --app hello --target /tmp/apps --output /tmp/fs.img
+
+          echo "--- inspect ls ---"
+          "$BIN/inspect" ls /tmp/fs.img | tee /tmp/ls.txt
+          grep -qx hello /tmp/ls.txt
+
+          echo "--- inspect cat ---"
+          "$BIN/inspect" cat /tmp/fs.img hello > /tmp/out.txt
+          diff /tmp/apps/hello /tmp/out.txt
+          echo "round trip verified"
