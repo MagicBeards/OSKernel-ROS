@@ -25,24 +25,26 @@ project record, team details, and full design handbook live in
 
 Roughly 8,000 lines of Rust across 79 files.
 
-## The filesystem can be mounted on Linux
+## The filesystem runs outside the kernel too
 
 `ros-fs` is a `#![no_std]` crate with no kernel dependencies — it talks to a
 block device through a two-method trait. The same code that runs inside the
-kernel therefore also builds for a normal host, and `ros-fs-fuse` uses it to
-mount a filesystem image over FUSE:
+kernel therefore also builds for a normal host, and `ros-fs-fuse` is the
+host-side tool built on that: it formats an image, writes program binaries into
+it, then reopens the image and reads every file back to check it byte for byte.
 
 ```bash
-# On Linux, from the repository root
-cargo build -p ros-fs-fuse
-./target/debug/ros-fs-fuse target/riscv64gc-unknown-none-elf/debug/fs.img /mnt/ros
-ls /mnt/ros
+cargo run -p ros-fs-fuse -- \
+  --app hello --target /tmp/apps --output /tmp/fs.img
 ```
 
-This makes the on-disk format inspectable with ordinary tools — `ls`, `cat`,
-`hexdump` — instead of only through the kernel's own debug output. It is the part
-of the project most useful outside the competition: any `easy-fs`-shaped image
-can be mounted the same way.
+The image it produces is what the kernel mounts as `/`. That makes the on-disk
+format reproducible outside the kernel: the packer is a `mkfs` for this
+filesystem, and its own verification pass is what keeps the format honest.
+
+Despite the crate name, there is no FUSE implementation — it packs, it does not
+mount. Mounting the image on a Linux host would need a FUSE layer that does not
+exist here yet.
 
 ## Building
 
