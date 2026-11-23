@@ -46,7 +46,7 @@ jobs:
       # ros-fs-fuse declares forced-target = x86_64-unknown-linux-gnu, so these
       # binaries only exist for Linux and land under that target directory.
       - name: Build the image tools
-        run: cargo build -p ros-fs-fuse --bins
+        run: cargo build -p ros-fs-fuse --bins --target x86_64-unknown-linux-gnu
 
       - name: Pack an image and read it back
         run: |

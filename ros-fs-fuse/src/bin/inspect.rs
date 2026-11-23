@@ -11,11 +11,12 @@
 
 use std::fs::OpenOptions;
 use std::io::Write;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex as StdMutex};
 
 use clap::{Parser, Subcommand};
 use ros_fs::fs::{FileSystem, FileSystemRootInode};
 use ros_fs_fuse::block_file::BlockFile;
+use spin::Mutex;
 
 #[derive(Parser)]
 #[command(version, about = "Inspect a ros-fs filesystem image without mounting it")]
@@ -46,7 +47,7 @@ fn open(image: &str) -> Arc<Mutex<FileSystem>> {
         .write(true)
         .open(image)
         .unwrap_or_else(|e| panic!("cannot open image {image}: {e}"));
-    FileSystem::open(Arc::new(BlockFile(Mutex::new(file))))
+    FileSystem::open(Arc::new(BlockFile(StdMutex::new(file))))
 }
 
 fn main() {
