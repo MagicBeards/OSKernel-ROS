@@ -34,17 +34,26 @@ host-side tool built on that: it formats an image, writes program binaries into
 it, then reopens the image and reads every file back to check it byte for byte.
 
 ```bash
-cargo run -p ros-fs-fuse -- \
+# Pack program binaries into an image
+cargo run -p ros-fs-fuse --bin ros-fs-fuse -- \
   --app hello --target /tmp/apps --output /tmp/fs.img
+
+# Read the image back — no mount, no root, no loop device
+cargo run -p ros-fs-fuse --bin inspect -- ls  /tmp/fs.img
+cargo run -p ros-fs-fuse --bin inspect -- cat /tmp/fs.img hello
 ```
 
 The image it produces is what the kernel mounts as `/`. That makes the on-disk
 format reproducible outside the kernel: the packer is a `mkfs` for this
-filesystem, and its own verification pass is what keeps the format honest.
+filesystem, its own verification pass reopens the image and checks every file
+byte for byte, and `inspect` reads an image back through the same filesystem
+code the kernel runs.
 
-Despite the crate name, there is no FUSE implementation — it packs, it does not
-mount. Mounting the image on a Linux host would need a FUSE layer that does not
-exist here yet.
+Despite the crate name, there is no FUSE implementation — it packs and inspects,
+it does not mount. Mounting would need a FUSE layer that does not exist here.
+
+CI builds both binaries, packs an image, lists it, and diffs a file read back
+through `inspect` against the original.
 
 ## Building
 
